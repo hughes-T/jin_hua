@@ -10,10 +10,10 @@ public class Card {
     private String name;
 
     //黑红梅方
-    public static final String TYPE_SPADE = "♠";
-    public static final String TYPE_RED_HEART = "♥";
-    public static final String TYPE_BLOSSOM = "♣";
-    public static final String TYPE_BLOCK = "♦";
+    public static final String TYPE_SPADE = "黑桃♠";
+    public static final String TYPE_RED_HEART = "红心♥";
+    public static final String TYPE_BLOSSOM = "梅花♣";
+    public static final String TYPE_BLOCK = "方片♦";
     private String type;
 
     public static final String POINT_A = "A";

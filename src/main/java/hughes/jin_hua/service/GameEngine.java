@@ -133,6 +133,7 @@ public class GameEngine {
             //准备阶段
             if (Player.GAME_STATUS_UN_READY.equals(player.getGameStatus())){
                 showText.add("请准备");
+                showButtons.add(GameConsts.READY_BUTTON);
             }
             StringJoiner unReadyNames = new StringJoiner("、");
             PLAYER_LIST.forEach(ele -> {

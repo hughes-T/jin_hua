@@ -24,4 +24,8 @@ public class Card {
 
     private Integer level;
 
+    public String getDesc(){
+        return point + type;
+    }
+
 }

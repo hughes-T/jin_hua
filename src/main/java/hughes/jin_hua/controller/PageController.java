@@ -4,23 +4,23 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 @CrossOrigin
-@RequestMapping("/first")
+@RequestMapping("/page")
 @Controller
-public class FirstController {
+public class PageController {
 
-
-    @GetMapping("/demo")
-    public String demo(){
-        return "first";
+    /**
+     * 主页
+     */
+    @GetMapping("/index")
+    public String index(){
+        return "index";
     }
 
-    @ResponseBody
-    @GetMapping("/demo2")
-    public String demo2(){
-        return "other";
+    @GetMapping("/gameInfo")
+    public String gameInfo(){
+        return "gameInfo";
     }
 
 }

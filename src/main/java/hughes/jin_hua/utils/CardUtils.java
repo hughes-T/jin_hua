@@ -16,7 +16,7 @@ public class CardUtils {
     /**
      * 初始化牌
      */
-    public List<Card> initCards() {
+    public static List<Card> initCards() {
         List<Card> cards = Lists.newArrayList();
         // 初始化牌
         String[] types = {Card.TYPE_SPADE, Card.TYPE_SPADE, Card.TYPE_SPADE, Card.TYPE_SPADE};

@@ -15,6 +15,7 @@ public class GameController extends GlobalExceptionHandler  {
 
     @Autowired
     private GameEngine gameEngine;
+
     /**
      * 玩家获取游戏页实时信息
      */
@@ -22,6 +23,15 @@ public class GameController extends GlobalExceptionHandler  {
     @PostMapping("/getInfo")
     public ApiResult getInfo(@RequestBody Map<String, String> param){
         return gameEngine.getGamePageInfo(param);
+    }
+
+    /**
+     * 玩家操作
+     */
+    @ResponseBody
+    @PostMapping("/buttonReq")
+    public ApiResult buttonReq(@RequestBody Map<String, String> param){
+        return gameEngine.buttonReq(param);
     }
 
 }

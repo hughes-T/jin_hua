@@ -6,6 +6,18 @@ package hughes.jin_hua.constants;
  */
 public class GameConsts {
 
+    /**
+     * 看牌
+     */
     public static final String LOOK_CARD_BUTTON = "lookCardButton";
+
+    /**
+     * 弃牌
+     */
     public static final String ABANDON_CARD_BUTTON = "abandonCardButton";
+
+    /**
+     * 准备
+     */
+    public static final String READY_BUTTON = "readyButton";
 }

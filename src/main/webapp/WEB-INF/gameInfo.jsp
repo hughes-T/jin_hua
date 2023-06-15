@@ -19,8 +19,9 @@
 
 <button id="refreshButton" onclick="loadPage()">刷新</button>
 <%-- 显示或隐藏按钮 --%>
-<button id="lookCardButton" onclick="buttonReq('1')">看牌</button>
-<button id="abandonCardButton" style="display:none;" onclick="buttonReq('2')">弃牌</button>
+<button id="lookCardButton" onclick="buttonReq('lookCardButton')">看牌</button>
+<button id="abandonCardButton" onclick="buttonReq('abandonCardButton')">弃牌</button>
+<button id="readyButton" onclick="buttonReq('readyButton')">准备</button>
 
 
 </body>
@@ -41,33 +42,43 @@
         xhr.onreadystatechange = function () {
             if (xhr.readyState == 4 && xhr.status == 200) {
                 var responseData = JSON.parse(xhr.responseText);
+                if (responseData.data == '100'){
+                    alert("玩家信息失效")
+                    window.location.href = "index";
+                }
                 if (responseData.success == true){
-                    if (responseData.data == '100'){
-                        alert("玩家信息失效")
-
-                    }
-
-                    pageBuild(data);
+                    pageBuild(responseData.data);
                 }else {
                     alert(responseData.message);
                 }
             }
         };
-        xhr.open("POST", "/user", true);
+        xhr.open("POST", "/game/getInfo", true);
         xhr.setRequestHeader("Content-Type", "application/json;charset=utf-8");
-        xhr.send(JSON.stringify(user));
+        xhr.send(JSON.stringify(reqParam));
     }
 
     /**
      * 页面渲染
      */
     function pageBuild(data) {
-        var showText = document.getElementById("showText");
-        showText.innerHTML = data;
-        if (user.age >= 18) {
-            //显示
+        const showText = document.getElementById("showText");
+        showText.innerHTML = data.showText;
+        if (data.showButtons.includes("readyButton")){
+            document.getElementById("readyButton").style.display = "block";
+        } else {
+            document.getElementById("readyButton").style.display = "none";
+        }
+
+        if (data.showButtons.includes("abandonCardButton")){
+            document.getElementById("abandonCardButton").style.display = "block";
+        } else {
+            document.getElementById("abandonCardButton").style.display = "none";
+        }
+
+        if (data.showButtons.includes("lookCardButton")){
             document.getElementById("lookCardButton").style.display = "block";
-            //隐藏
+        } else {
             document.getElementById("lookCardButton").style.display = "none";
         }
     }
@@ -78,20 +89,26 @@
      * type
      */
     function buttonReq(type) {
-        var userName = document.getElementById("userName").value;
-        var userAge = document.getElementById("userAge").value;
-        var user = {name: userName, age: userAge};
+        const reqParam = {};
+        reqParam['userToken'] = userToken;
         var xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function () {
             if (xhr.readyState == 4 && xhr.status == 200) {
-
-
-                loadPage();
+                var responseData = JSON.parse(xhr.responseText);
+                if (responseData.data == '100'){
+                    alert("玩家信息失效")
+                    window.location.href = "index";
+                }
+                if (responseData.success == true){
+                    loadPage();
+                }else {
+                    alert(responseData.message);
+                }
             }
         };
-        xhr.open("POST", "/user", true);
+        xhr.open("POST", "/game/buttonReq", true);
         xhr.setRequestHeader("Content-Type", "application/json;charset=utf-8");
-        xhr.send(JSON.stringify(user));
+        xhr.send(JSON.stringify(reqParam));
     }
 
 

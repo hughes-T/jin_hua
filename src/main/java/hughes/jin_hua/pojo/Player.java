@@ -24,6 +24,12 @@ public class Player {
 
     private String userToken;
 
+    public static final String GAME_STATUS_UN_READY = "0";
+    public static final String GAME_STATUS_READY = "1";
+    public static final String GAME_STATUS_PLAY_ING = "2";
+    private String gameStatus;
+
+
     public String getCardStatusDesc(){
         return matchCardStatus(cardStatus);
     }

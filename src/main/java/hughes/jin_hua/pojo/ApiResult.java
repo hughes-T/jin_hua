@@ -33,4 +33,8 @@ public class ApiResult {
         return new ApiResult().setSuccess(true).setData(data).setMessage("请求成功");
     }
 
+    public static ApiResult success(){
+        return success(null);
+    }
+
 }

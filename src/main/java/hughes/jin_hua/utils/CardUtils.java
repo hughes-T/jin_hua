@@ -19,7 +19,7 @@ public class CardUtils {
     public static List<Card> initCards() {
         List<Card> cards = Lists.newArrayList();
         // 初始化牌
-        String[] types = {Card.TYPE_SPADE, Card.TYPE_SPADE, Card.TYPE_SPADE, Card.TYPE_SPADE};
+        String[] types = {Card.TYPE_SPADE, Card.TYPE_RED_HEART, Card.TYPE_BLOSSOM, Card.TYPE_BLOCK};
         String[] numbers = {"2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"};
         for (String type : types) {
             for (int i = 0; i < numbers.length; i++) {

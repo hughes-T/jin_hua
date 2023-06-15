@@ -163,11 +163,10 @@ public class GameEngine {
             if (otherPlayer.equals(player)){
                 continue;
             }
-            if (Player.CARD_STATUS_UN_LOOK.equals(otherPlayer.getCardStatus())){
-                showText.add(String.format("玩家 %s 处于焖牌阶段", otherPlayer.getName()));
-            } else {
-                showText.add(String.format("玩家 %s 处于 %s 阶段，牌型 %s",
-                        otherPlayer.getName(), otherPlayer.getCardStatusDesc(), otherPlayer.getCardsDesc()));
+            showText.add(String.format("玩家 %s 处于 %s 阶段",
+                    otherPlayer.getName(), otherPlayer.getCardStatusDesc()));
+            if (Player.CARD_STATUS_ABANDON.equals(otherPlayer.getCardStatus())){
+                showText.add(String.format("牌型 %s", otherPlayer.getCardsDesc()));
             }
         }
         return ApiResult.success(ImmutableMap.of("showText", showText.toString(), "showButtons", showButtons));

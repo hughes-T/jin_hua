@@ -8,6 +8,11 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
+    <style>
+        #showText {
+            white-space: pre-line;
+        }
+    </style>
     <title>实时信息</title>
 </head>
 <body onload="loadPage()">

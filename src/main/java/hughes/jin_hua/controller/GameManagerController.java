@@ -26,7 +26,7 @@ public class GameManagerController extends GlobalExceptionHandler {
      * 查询游戏状态
      */
     @ResponseBody
-    @GetMapping("/queryPlayers")
+    @GetMapping("/queryGameInfo")
     public ApiResult queryGameInfo(){
         return engine.queryGameInfo();
     }

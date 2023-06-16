@@ -1,5 +1,6 @@
 package hughes.jin_hua.service;
 
+import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
@@ -14,6 +15,7 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class GameEngine {
@@ -31,6 +33,11 @@ public class GameEngine {
     private static final String GAME_STATUS_CREATE_ING = "1";
     private static final String GAME_STATUS_CLOSE = "0";
 
+    private static final Map<String, String> GAME_STATUS_MAP = ImmutableMap.of(
+            GAME_STATUS_START,"已开始",
+            GAME_STATUS_CREATE_ING,"创建中",
+            GAME_STATUS_CLOSE,"已结束");
+
     public synchronized Boolean changeGameStatus(String status) {
         if (GAME_STATUS_CREATE_ING.equals(status)) {
             Preconditions.checkArgument(GAME_STATUS.equals(GAME_STATUS_CLOSE), "仅能在游戏关闭状态切换到 1");
@@ -47,7 +54,7 @@ public class GameEngine {
         } else if (GAME_STATUS_CLOSE.equals(status)) {
             //关闭游戏清空玩家状态
             gameInfoClear();
-            GAME_STATUS = GAME_STATUS_START;
+            GAME_STATUS = GAME_STATUS_CLOSE;
         }
         return Boolean.TRUE;
     }
@@ -243,5 +250,11 @@ public class GameEngine {
         throw new IllegalArgumentException(ApiResult.CODE_TOKEN_LOSE);
     }
 
+
+    public ApiResult queryGameInfo() {
+        return ApiResult.success(String.format("游戏状态：%s，\n 已加入的玩家： %s "
+                , GAME_STATUS_MAP.get(GAME_STATUS),
+                Joiner.on("、").join(PLAYER_LIST.stream().map(Player::getName).collect(Collectors.toList()))));
+    }
 
 }

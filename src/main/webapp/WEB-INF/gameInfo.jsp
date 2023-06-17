@@ -12,22 +12,66 @@
         #showText {
             white-space: pre-line;
         }
+
+        button {
+            display: inline-block;
+            margin: 0 10px;
+            background-color: #137f44;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease-in-out;
+        }
+
+        button:hover {
+            background-color: #00cc0a;
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        button:first-of-type {
+            margin-right: 10px;
+        }
+
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
     </style>
     <title>实时信息</title>
 </head>
 <body onload="loadPage()">
-<!-- HTML 页面 -->
-<h1>实时信息</h1>
-
-<%-- 显示页面内容 --%>
-<div id="showText"></div>
-
-<button id="refreshButton" onclick="loadPage()">刷新</button>
-<%-- 显示或隐藏按钮 --%>
-<button id="lookCardButton" onclick="buttonReq('lookCardButton')">看牌</button>
-<button id="abandonCardButton" onclick="buttonReq('abandonCardButton')">弃牌</button>
-<button id="readyButton" onclick="buttonReq('readyButton')">准备</button>
-
+<div class="container">
+    <h3>实时信息</h3>
+    <%-- 显示页面内容 --%>
+    <div id="showText"></div>
+    <br>
+    <div class="button-container">
+        <button id="refreshButton" onclick="loadPage()">刷新</button>
+        <%-- 显示或隐藏按钮 --%>
+        <button id="lookCardButton" onclick="buttonReq('lookCardButton')">看牌</button>
+        <button id="abandonCardButton" onclick="buttonReq('abandonCardButton')">弃牌</button>
+        <button id="readyButton" onclick="buttonReq('readyButton')">准备</button>
+        <button id="startGameButton" onclick="buttonReq('startGameButton')">开始游戏</button>
+        <button id="startNextGameButton" onclick="buttonReq('startNextGameButton')">开始新一局游戏</button>
+        <button id="restartGameButton" onclick="buttonReq('restartGameButton')">重启游戏</button>
+    </div>
+</div>
 
 </body>
 
@@ -38,22 +82,22 @@
         alert("请先注册信息")
         window.location.href = "index";
     }
+
     //刷新信息 若返回 userToken 失效，则清空 token 并跳转到登录页面
 
-    function loadPage () {
+    function loadPage() {
         const reqParam = {};
         reqParam['userToken'] = userToken;
         var xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function () {
             if (xhr.readyState == 4 && xhr.status == 200) {
                 var responseData = JSON.parse(xhr.responseText);
-                if (responseData.data == '100'){
-                    alert("玩家信息失效")
+                if (responseData.data == '100') {
                     window.location.href = "index";
                 }
-                if (responseData.success == true){
+                if (responseData.success == true) {
                     pageBuild(responseData.data);
-                }else {
+                } else {
                     alert(responseData.message);
                 }
             }
@@ -69,22 +113,39 @@
     function pageBuild(data) {
         const showText = document.getElementById("showText");
         showText.innerHTML = data.showText;
-        if (data.showButtons.includes("readyButton")){
+        if (data.showButtons.includes("readyButton")) {
             document.getElementById("readyButton").style.display = "block";
         } else {
             document.getElementById("readyButton").style.display = "none";
         }
 
-        if (data.showButtons.includes("abandonCardButton")){
+        if (data.showButtons.includes("abandonCardButton")) {
             document.getElementById("abandonCardButton").style.display = "block";
         } else {
             document.getElementById("abandonCardButton").style.display = "none";
         }
 
-        if (data.showButtons.includes("lookCardButton")){
+        if (data.showButtons.includes("lookCardButton")) {
             document.getElementById("lookCardButton").style.display = "block";
         } else {
             document.getElementById("lookCardButton").style.display = "none";
+        }
+        if (data.showButtons.includes("startGameButton")) {
+            document.getElementById("startGameButton").style.display = "block";
+        } else {
+            document.getElementById("startGameButton").style.display = "none";
+        }
+
+        if (data.showButtons.includes("startNextGameButton")) {
+            document.getElementById("startNextGameButton").style.display = "block";
+        } else {
+            document.getElementById("startNextGameButton").style.display = "none";
+        }
+
+        if (data.showButtons.includes("restartGameButton")) {
+            document.getElementById("restartGameButton").style.display = "block";
+        } else {
+            document.getElementById("restartGameButton").style.display = "none";
         }
     }
 
@@ -94,6 +155,12 @@
      * type
      */
     function buttonReq(type) {
+        if (type == 'restartGameButton'){
+            let confirmed = confirm('确定要重启游戏吗，这将会清除所有玩家的信息');
+            if (!confirmed) {
+                return;
+            }
+        }
         const reqParam = {};
         reqParam['userToken'] = userToken;
         reqParam['buttonType'] = type;
@@ -101,13 +168,12 @@
         xhr.onreadystatechange = function () {
             if (xhr.readyState == 4 && xhr.status == 200) {
                 var responseData = JSON.parse(xhr.responseText);
-                if (responseData.data == '100'){
-                    alert("玩家信息失效")
+                if (responseData.data == '100') {
                     window.location.href = "index";
                 }
-                if (responseData.success == true){
+                if (responseData.success == true) {
                     loadPage();
-                }else {
+                } else {
                     alert(responseData.message);
                 }
             }

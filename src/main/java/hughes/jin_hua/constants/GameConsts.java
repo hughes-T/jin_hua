@@ -20,4 +20,19 @@ public class GameConsts {
      * 准备
      */
     public static final String READY_BUTTON = "readyButton";
+
+    /**
+     * 开始游戏
+     */
+    public static final String START_GAME_BUTTON = "startGameButton";
+
+    /**
+     * 开始新一局游戏
+     */
+    public static final String START_NEXT_GAME_BUTTON = "startNextGameButton";
+
+    /**
+     * 重启游戏
+     */
+    public static final String RESTART_GAME_BUTTON = "restartGameButton";
 }

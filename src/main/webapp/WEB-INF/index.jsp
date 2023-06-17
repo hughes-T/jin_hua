@@ -8,14 +8,79 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
-    <title>注册</title>
+    <title>加入</title>
+    <style>
+        input[type="text"] {
+            width: 30%;
+            height: 35px;
+            padding: 5px;
+            font-size: 16px;
+            color: #333;
+            border: 2px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0 0 5px #ccc;
+            text-align: center;
+            margin: 10px auto;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border: 2px solid #0099ff;
+            box-shadow: 0 0 5px #0099ff;
+        }
+
+        button {
+            display: inline-block;
+            margin: 0 10px;
+            background-color: #137f44;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease-in-out;
+        }
+
+        button:hover {
+            background-color: #00cc0a;
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        button:first-of-type {
+            margin-right: 10px;
+        }
+
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    </style>
 </head>
 <body>
-<!-- HTML 页面 -->
-<input type="text" id="userName" placeholder="用户名"/>
-<input type="text" id="password" placeholder="密码"/>
-<button id="submitButton" onclick="register()">注册</button>
-<button id="loginButton" onclick="login()">登录</button>
+
+<div class="container">
+    <input type="text" id="userName" placeholder="用户名"/>
+    <input type="text" id="password" placeholder="密码"/>
+    <div class="button-container">
+        <button id="submitButton" onclick="register()">新玩家加入</button>
+        <button id="loginButton" onclick="login()">登录加入</button>
+    </div>
+</div>
+
 </body>
 
 <script type="text/javascript">

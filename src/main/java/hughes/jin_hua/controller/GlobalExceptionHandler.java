@@ -14,9 +14,9 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResult> handleException(Exception e) {
         if (ApiResult.CODE_TOKEN_LOSE.equals(e.getMessage())){
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResult.fail("登录信息失效").setData(ApiResult.CODE_TOKEN_LOSE));
+            return ResponseEntity.status(HttpStatus.OK).body(ApiResult.fail("登录信息失效").setData(ApiResult.CODE_TOKEN_LOSE));
         }
         log.error("发生异常",e);
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiResult.fail(e.getMessage()));
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResult.fail(e.getMessage()));
     }
 }

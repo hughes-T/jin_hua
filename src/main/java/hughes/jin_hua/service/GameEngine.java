@@ -34,9 +34,9 @@ public class GameEngine {
     private static final String GAME_STATUS_CLOSE = "0";
 
     private static final Map<String, String> GAME_STATUS_MAP = ImmutableMap.of(
-            GAME_STATUS_START,"已开始",
-            GAME_STATUS_CREATE_ING,"创建中",
-            GAME_STATUS_CLOSE,"已结束");
+            GAME_STATUS_START, "已开始",
+            GAME_STATUS_CREATE_ING, "创建中",
+            GAME_STATUS_CLOSE, "已结束");
 
     public synchronized Boolean changeGameStatus(String status) {
         if (GAME_STATUS_CREATE_ING.equals(status)) {
@@ -129,22 +129,32 @@ public class GameEngine {
      */
     public ApiResult getGamePageInfo(Map<String, String> param) {
         Player player = matchPlayerByToken(param.get("userToken"));
-        if (!GAME_STATUS.equals(GAME_STATUS_START)) {
-            return ApiResult.success(ImmutableMap.of("showText", "等待开始", "showButtons", Lists.newArrayList()));
-        }
         //展示区信息 + 操作按钮
         StringJoiner showText = new StringJoiner("\n");
         Set<String> showButtons = Sets.newHashSet();
 
-        if (PLAYER_LIST.stream().anyMatch(ele -> Player.GAME_STATUS_UN_READY.equals(ele.getGameStatus()))){
+        boolean isMasterPlayer = player.getUserToken().equals(PLAYER_LIST.get(0).getUserToken());
+        if (isMasterPlayer) {
+            showButtons.add(GameConsts.RESTART_GAME_BUTTON);
+        }
+        if (!GAME_STATUS.equals(GAME_STATUS_START)) {
+            //未开始阶段
+            if (isMasterPlayer) {
+                //房主拥有开始 开始游戏按钮权限
+                showButtons.add(GameConsts.START_GAME_BUTTON);
+            }
+            return ApiResult.success(ImmutableMap.of("showText", "等待开始", "showButtons", showButtons));
+        }
+
+        if (PLAYER_LIST.stream().anyMatch(ele -> Player.GAME_STATUS_UN_READY.equals(ele.getGameStatus()))) {
             //准备阶段
-            if (Player.GAME_STATUS_UN_READY.equals(player.getGameStatus())){
+            if (Player.GAME_STATUS_UN_READY.equals(player.getGameStatus())) {
                 showText.add("请准备");
                 showButtons.add(GameConsts.READY_BUTTON);
             }
             StringJoiner unReadyNames = new StringJoiner("、");
             PLAYER_LIST.forEach(ele -> {
-                if (Player.GAME_STATUS_UN_READY.equals(ele.getGameStatus())){
+                if (Player.GAME_STATUS_UN_READY.equals(ele.getGameStatus())) {
                     unReadyNames.add(ele.getName());
                 }
             });
@@ -152,7 +162,7 @@ public class GameEngine {
             return ApiResult.success(ImmutableMap.of("showText", showText.toString(), "showButtons", showButtons));
         }
 
-        showText.add(String.format("你处于%s阶段", player.getCardStatusDesc()));
+        showText.add(String.format("你处于 %s 阶段", player.getCardStatusDesc()));
         if (!Player.CARD_STATUS_UN_LOOK.equals(player.getCardStatus())) {
             //非暗阶段 加载自己的信息
             showText.add(String.format("你的牌型 %s", player.getCardsDesc()));
@@ -167,14 +177,19 @@ public class GameEngine {
 
         //加载其他人信息
         for (Player otherPlayer : PLAYER_LIST) {
-            if (otherPlayer.equals(player)){
+            if (otherPlayer.equals(player)) {
                 continue;
             }
+            showText.add("------------------------");
             showText.add(String.format("玩家 %s 处于 %s 阶段",
                     otherPlayer.getName(), otherPlayer.getCardStatusDesc()));
-            if (Player.CARD_STATUS_ABANDON.equals(otherPlayer.getCardStatus())){
+            if (Player.CARD_STATUS_ABANDON.equals(otherPlayer.getCardStatus())) {
                 showText.add(String.format("牌型 %s", otherPlayer.getCardsDesc()));
             }
+        }
+        //全部弃牌-房主拥有开启新一轮的 按钮权限
+        if (isMasterPlayer && PLAYER_LIST.stream().allMatch(ele -> Player.CARD_STATUS_ABANDON.equals(ele.getCardStatus()))) {
+            showButtons.add(GameConsts.START_NEXT_GAME_BUTTON);
         }
         return ApiResult.success(ImmutableMap.of("showText", showText.toString(), "showButtons", showButtons));
     }
@@ -182,16 +197,39 @@ public class GameEngine {
 
     /**
      * 按钮操作
-     * 玩家全部完成，进入到待准备阶段(新的一轮)
      */
     public ApiResult buttonReq(Map<String, String> param) {
         Player player = matchPlayerByToken(param.get("userToken"));
         String buttonType = param.get("buttonType");
         Preconditions.checkArgument(!ObjectUtils.isEmpty(buttonType), "buttonType 不能为空!");
+        //房主
+        boolean isMasterPlayer = player.getUserToken().equals(PLAYER_LIST.get(0).getUserToken());
+        if (isMasterPlayer) {
+            if (GameConsts.START_GAME_BUTTON.equals(buttonType)) {
+                //开始游戏
+                changeGameStatus(GAME_STATUS_START);
+                return ApiResult.success();
+            }
+            if (GameConsts.RESTART_GAME_BUTTON.equals(buttonType)) {
+                //重启游戏
+                changeGameStatus(GAME_STATUS_CLOSE);
+                changeGameStatus(GAME_STATUS_CREATE_ING);
+                return ApiResult.success();
+            }
+            if (GameConsts.START_NEXT_GAME_BUTTON.equals(buttonType)) {
+                //开始新一局
+                if (PLAYER_LIST.stream().allMatch(ele -> Player.CARD_STATUS_ABANDON.equals(ele.getCardStatus()))) {
+                    initPlayReadyStatus();
+                } else {
+                    return ApiResult.fail("还有玩家未弃牌，不可开启新一局！");
+                }
+                return ApiResult.success();
+            }
+        }
         if (GameConsts.READY_BUTTON.equals(buttonType)) {
             return readyOption(player);
         }
-        Preconditions.checkArgument(!Player.GAME_STATUS_UN_READY.equals(player.getGameStatus()), "非准备状态不可执行准备之外的操作");
+        Preconditions.checkArgument(!Player.GAME_STATUS_UN_READY.equals(player.getGameStatus()), "目前阶段不允许的操作");
         if (GameConsts.LOOK_CARD_BUTTON.equals(buttonType)) {
             return lookCardOption(player);
         }
@@ -206,11 +244,8 @@ public class GameEngine {
      * 全部丢弃, 进入到待准备状态
      */
     private ApiResult abandonCardOption(Player player) {
-        Preconditions.checkArgument(!Player.CARD_STATUS_ABANDON.equals(player.getCardStatus()),"你已经弃过牌");
+        Preconditions.checkArgument(!Player.CARD_STATUS_ABANDON.equals(player.getCardStatus()), "你已经弃过牌");
         player.setCardStatus(Player.CARD_STATUS_ABANDON);
-        if (PLAYER_LIST.stream().allMatch(ele -> Player.CARD_STATUS_ABANDON.equals(ele.getCardStatus()))) {
-            initPlayReadyStatus();
-        }
         return ApiResult.success();
     }
 
@@ -218,7 +253,7 @@ public class GameEngine {
      * 看牌操作
      */
     private ApiResult lookCardOption(Player player) {
-        Preconditions.checkArgument(Player.CARD_STATUS_UN_LOOK.equals(player.getCardStatus()),"只有焖牌才可以请求看牌");
+        Preconditions.checkArgument(Player.CARD_STATUS_UN_LOOK.equals(player.getCardStatus()), "只有焖牌才可以请求看牌");
         player.setCardStatus(Player.CARD_STATUS_LOOK);
         return ApiResult.success();
     }

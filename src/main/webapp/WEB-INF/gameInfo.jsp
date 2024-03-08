@@ -112,7 +112,7 @@
      */
     function pageBuild(data) {
         const showText = document.getElementById("showText");
-        showText.innerHTML = data.showText;
+        showText.innerHTML = formatText(data.showText);
         if (data.showButtons.includes("readyButton")) {
             document.getElementById("readyButton").style.display = "block";
         } else {
@@ -147,6 +147,15 @@
         } else {
             document.getElementById("restartGameButton").style.display = "none";
         }
+    }
+
+
+
+    function formatText(text) {
+        // 将♥和♦替换为带有红色样式的<span>元素
+        text = text.replaceAll('♥', '<span style="color: red;">♥</span>');
+        text = text.replaceAll('♦', '<span style="color: red;">♦</span>');
+        return text;
     }
 
 

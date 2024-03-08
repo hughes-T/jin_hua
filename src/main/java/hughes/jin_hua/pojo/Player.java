@@ -35,7 +35,7 @@ public class Player {
     }
 
     public String getCardsDesc(){
-        StringJoiner result = new StringJoiner(" ");
+        StringJoiner result = new StringJoiner("|","|","|");
         for (Card card : cards) {
             result.add(card.getDesc());
         }

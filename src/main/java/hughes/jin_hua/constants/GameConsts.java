@@ -17,19 +17,20 @@ public class GameConsts {
     public static final String ABANDON_CARD_BUTTON = "abandonCardButton";
 
     /**
-     * 准备
+     * 对拼玩家
      */
-    public static final String READY_BUTTON = "readyButton";
+    public static final String FIGHT_PLAYER_BUTTON = "fightPlayerButton_";
+
+    /**
+     * 上注
+     */
+    public static final String ADD_CHIP = "addChip";
 
     /**
      * 开始游戏
      */
     public static final String START_GAME_BUTTON = "startGameButton";
 
-    /**
-     * 开始新一局游戏
-     */
-    public static final String START_NEXT_GAME_BUTTON = "startNextGameButton";
 
     /**
      * 重启游戏

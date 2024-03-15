@@ -14,45 +14,22 @@ public class Player {
 
     private String password;
 
-    private List<Card> cards;
-
-    public static final String CARD_STATUS_UN_LOOK = "0";
-    public static final String CARD_STATUS_LOOK = "1";
-    public static final String CARD_STATUS_ABANDON = "2";
-
-    private String cardStatus;
-
     private String userToken;
 
     public static final String GAME_STATUS_UN_READY = "0";
-    public static final String GAME_STATUS_READY = "1";
     public static final String GAME_STATUS_PLAY_ING = "2";
+
+    /**
+     * 玩家状态 0-未准备 2-游戏中
+     */
     private String gameStatus;
 
+    /**
+     * 筹码
+     */
+    private Integer chipNumber;
 
-    public String getCardStatusDesc(){
-        return matchCardStatus(cardStatus);
-    }
 
-    public String getCardsDesc(){
-        StringJoiner result = new StringJoiner("|","|","|");
-        for (Card card : cards) {
-            result.add(card.getDesc());
-        }
-        return result.toString();
-    }
 
-    private String matchCardStatus(String cardStatus){
-        if (CARD_STATUS_UN_LOOK.equals(cardStatus)){
-            return "焖牌";
-        }
-        if (CARD_STATUS_LOOK.equals(cardStatus)){
-            return "看牌";
-        }
-        if (CARD_STATUS_ABANDON.equals(cardStatus)){
-            return "弃牌";
-        }
-        return null;
-    }
 
 }

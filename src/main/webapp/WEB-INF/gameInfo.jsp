@@ -66,9 +66,7 @@
         <%-- 显示或隐藏按钮 --%>
         <button id="lookCardButton" onclick="buttonReq('lookCardButton')">看牌</button>
         <button id="abandonCardButton" onclick="buttonReq('abandonCardButton')">弃牌</button>
-        <button id="readyButton" onclick="buttonReq('readyButton')">准备</button>
         <button id="startGameButton" onclick="buttonReq('startGameButton')">开始游戏</button>
-        <button id="startNextGameButton" onclick="buttonReq('startNextGameButton')">开始新一局游戏</button>
         <button id="restartGameButton" onclick="buttonReq('restartGameButton')">重启游戏</button>
     </div>
 </div>
@@ -82,6 +80,11 @@
         alert("请先注册信息")
         window.location.href = "index";
     }
+
+    window.onload = function () {
+        loadPage(); // 页面加载完成后立即调用一次
+        setInterval(loadPage, 3000); // 每隔 3 秒调用一次 loadPage() 方法
+    };
 
     //刷新信息 若返回 userToken 失效，则清空 token 并跳转到登录页面
 
@@ -111,13 +114,11 @@
      * 页面渲染
      */
     function pageBuild(data) {
+        var buttonContainer = document.querySelector(".button-container");
+        buttonContainer.innerHTML = ""; // 清空按钮容器
+
         const showText = document.getElementById("showText");
         showText.innerHTML = formatText(data.showText);
-        if (data.showButtons.includes("readyButton")) {
-            document.getElementById("readyButton").style.display = "block";
-        } else {
-            document.getElementById("readyButton").style.display = "none";
-        }
 
         if (data.showButtons.includes("abandonCardButton")) {
             document.getElementById("abandonCardButton").style.display = "block";
@@ -136,19 +137,41 @@
             document.getElementById("startGameButton").style.display = "none";
         }
 
-        if (data.showButtons.includes("startNextGameButton")) {
-            document.getElementById("startNextGameButton").style.display = "block";
-        } else {
-            document.getElementById("startNextGameButton").style.display = "none";
-        }
-
         if (data.showButtons.includes("restartGameButton")) {
             document.getElementById("restartGameButton").style.display = "block";
         } else {
             document.getElementById("restartGameButton").style.display = "none";
         }
-    }
 
+        if (data.showButtons.includes("addChip")) {
+            var chipInput = document.createElement("input");
+            chipInput.type = "number";
+            chipInput.id = "chipInput";
+            chipInput.placeholder = "请输入筹码数量";
+            buttonContainer.appendChild(chipInput);
+
+            var confirmButton = document.createElement("button");
+            confirmButton.innerText = "确定";
+            confirmButton.setAttribute("onclick", "addChipReq()");
+            buttonContainer.appendChild(confirmButton);
+        }
+
+        // 动态生成以 "fightPlayerButton_" 前缀的按钮
+        data.showButtons.forEach(button => {
+            if (button.startsWith("fightPlayerButton_")) {
+                const buttonId = button;
+                const buttonText = button.replaceAll("fightPlayerButton_", ""); // 获取按钮文本
+                const newButton = document.createElement("button");
+                newButton.id = buttonId;
+                newButton.textContent = buttonText;
+                newButton.onclick = function() {
+                    buttonReq(buttonId); // 传递完整的按钮 ID
+                };
+                buttonContainer.appendChild(newButton); // 添加按钮到容器
+            }
+        });
+
+    }
 
 
     function formatText(text) {
@@ -173,6 +196,10 @@
         const reqParam = {};
         reqParam['userToken'] = userToken;
         reqParam['buttonType'] = type;
+        if (buttonId === 'addChip') {
+            var chipInput = document.getElementById("chipInput");
+            reqParam['chipNum'] = chipInput.value;
+        }
         var xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function () {
             if (xhr.readyState == 4 && xhr.status == 200) {

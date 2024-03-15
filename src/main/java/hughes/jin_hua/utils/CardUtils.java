@@ -10,7 +10,13 @@ public class CardUtils {
 
     /**
      * 比较大小
+     * @param c1 发起方
+     * @param c2 被比较方
+     * @return true-c1>c2
      */
+    public boolean compareCard(List<Card> c1, List<Card> c2){
+        return true;
+    }
 
 
     /**

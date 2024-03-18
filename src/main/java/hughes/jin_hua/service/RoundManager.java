@@ -1,6 +1,7 @@
 package hughes.jin_hua.service;
 
 import com.google.common.collect.Lists;
+import hughes.jin_hua.constants.GameConsts;
 import hughes.jin_hua.pojo.Card;
 import hughes.jin_hua.pojo.Player;
 import hughes.jin_hua.pojo.PlayerRoundInfo;
@@ -14,6 +15,7 @@ import org.springframework.util.ObjectUtils;
 import javax.annotation.Resource;
 import java.util.Comparator;
 import java.util.List;
+import java.util.StringJoiner;
 
 /**
  * 回合管理器
@@ -38,7 +40,7 @@ public class RoundManager {
 
     public PlayerRoundInfo findPlayerRoundInfo(Player player) {
         for (PlayerRoundInfo playerRoundInfo : playerRoundInfos) {
-            if (playerRoundInfo.getPlayer().equals(player)){
+            if (playerRoundInfo.getPlayer().equals(player)) {
                 return playerRoundInfo;
             }
         }
@@ -47,6 +49,36 @@ public class RoundManager {
 
     public PlayerRoundInfo getCurrentPlayerRound() {
         return currentPlayerRound;
+    }
+
+    /**
+     * 切换至下一个玩家执行
+     *
+     * @return 下一个玩家
+     */
+    public PlayerRoundInfo changeNextPlayer() {
+        //检索当前玩家所处位置
+        int currentPlayerIndex = playerRoundInfos.indexOf(currentPlayerRound);
+        //向后循环
+        for (int i = (currentPlayerIndex + 1); i < playerRoundInfos.size(); i++) {
+            PlayerRoundInfo playerRoundInfo = playerRoundInfos.get(i);
+            if (PlayerRoundInfo.CARD_STATUS_UN_LOOK.equals(playerRoundInfo.getCardStatus())
+                    || PlayerRoundInfo.CARD_STATUS_LOOK.equals(playerRoundInfo.getCardStatus())) {
+                currentPlayerRound = playerRoundInfo;
+                return playerRoundInfo;
+            }
+        }
+        //从头循环（轮数加1）
+        currentRoundCache.setRoundNum(currentRoundCache.getRoundNum() + 1);
+        for (int i = 0; i < currentPlayerIndex; i++) {
+            PlayerRoundInfo playerRoundInfo = playerRoundInfos.get(i);
+            if (PlayerRoundInfo.CARD_STATUS_UN_LOOK.equals(playerRoundInfo.getCardStatus())
+                    || PlayerRoundInfo.CARD_STATUS_LOOK.equals(playerRoundInfo.getCardStatus())) {
+                currentPlayerRound = playerRoundInfo;
+                return playerRoundInfo;
+            }
+        }
+        throw new RuntimeException("没有下一个可执行的玩家");
     }
 
     public RoundInfo getBeforeRoundCache() {
@@ -79,12 +111,7 @@ public class RoundManager {
         if (!ObjectUtils.isEmpty(winPlayer)) {
             beforeRoundCache = currentRoundCache;
             currentRoundCache = null;
-            for (int i = 0; i < players.size(); i++) {
-                if (winPlayer.equals(players.get(i))) {
-                    startIndex = i;
-                    break;
-                }
-            }
+            startIndex = players.indexOf(winPlayer);
         }
         //创建对局信息
         RoundInfo roundInfo = new RoundInfo();
@@ -140,5 +167,55 @@ public class RoundManager {
         playerRoundInfos.forEach(playerRoundInfo -> playerRoundInfo.getCards().sort(Comparator.comparing(Card::getLevel).reversed()));
     }
 
+
+    /**
+     * 结算对局
+     */
+    public void settleAccountsRound() {
+        //唯一存留玩家
+        if (!currentRoundIsEnd()) {
+            throw new RuntimeException("当前对局不允许结束！");
+        }
+        PlayerRoundInfo winPlayerRoundInfo = null;
+        for (PlayerRoundInfo playerRoundInfo : playerRoundInfos) {
+            if (PlayerRoundInfo.CARD_STATUS_UN_LOOK.equals(playerRoundInfo.getCardStatus())
+                    || PlayerRoundInfo.CARD_STATUS_LOOK.equals(playerRoundInfo.getCardStatus())) {
+                winPlayerRoundInfo = playerRoundInfo;
+                break;
+            }
+        }
+        if (ObjectUtils.isEmpty(winPlayerRoundInfo)) {
+            throw new RuntimeException("对局异常，未找到胜利玩家！");
+        }
+        //结算筹码
+        Player winPlayer = winPlayerRoundInfo.getPlayer();
+        winPlayer.setChipNumber(winPlayer.getChipNumber() + currentRoundCache.getPoolNumber());
+        //登记战果
+        StringJoiner resultShow = new StringJoiner("\n");
+        resultShow.add(String.format("%s 获得赢得对局，收获筹码 %s", winPlayer.getName(), currentRoundCache.getPoolNumber()));
+        resultShow.add("所有玩家牌型公布：");
+        for (PlayerRoundInfo playerRoundInfo : playerRoundInfos) {
+            resultShow.add(String.format("%s 玩家牌型为 %s", playerRoundInfo.getPlayer().getName(), playerRoundInfo.getCardsDesc()));
+        }
+        //开始新的一局
+        startRound(winPlayer);
+    }
+
+
+    /**
+     * 判定当前对局是否结束
+     *
+     * @return ture-是
+     */
+    public boolean currentRoundIsEnd() {
+        int canOptionPlayerCount = 0;
+        for (PlayerRoundInfo playerRoundInfo : playerRoundInfos) {
+            if (PlayerRoundInfo.CARD_STATUS_UN_LOOK.equals(playerRoundInfo.getCardStatus())
+                    || PlayerRoundInfo.CARD_STATUS_LOOK.equals(playerRoundInfo.getCardStatus())) {
+                canOptionPlayerCount++;
+            }
+        }
+        return canOptionPlayerCount == 1;
+    }
 
 }

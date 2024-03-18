@@ -14,7 +14,7 @@ public class CardUtils {
      * @param c2 被比较方
      * @return true-c1>c2
      */
-    public boolean compareCard(List<Card> c1, List<Card> c2){
+    public static boolean compareCard(List<Card> c1, List<Card> c2){
         return true;
     }
 

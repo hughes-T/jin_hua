@@ -24,5 +24,12 @@ public class ParamUtils {
         return 1;
     }
 
+    /**
+     * 单次回合筹码上限
+     */
+    public static int getRoundMaxChipNumber(){
+        return 10;
+    }
+
 
 }

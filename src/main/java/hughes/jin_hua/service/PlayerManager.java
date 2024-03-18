@@ -3,10 +3,7 @@ package hughes.jin_hua.service;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import hughes.jin_hua.constants.GameConsts;
-import hughes.jin_hua.pojo.ApiResult;
-import hughes.jin_hua.pojo.Card;
-import hughes.jin_hua.pojo.Player;
-import hughes.jin_hua.pojo.PlayerRoundInfo;
+import hughes.jin_hua.pojo.*;
 import hughes.jin_hua.utils.CardUtils;
 import hughes.jin_hua.utils.ParamUtils;
 import org.springframework.stereotype.Service;
@@ -125,7 +122,7 @@ public class PlayerManager {
         return player.getUserToken().equals(PLAYER_LIST.get(0).getUserToken());
     }
 
-    public void playerOption(String token, String buttonType) {
+    public void playerOption(String token, String buttonType, Map<String, String> param) {
         Player player = matchPlayerByToken(token);
         Preconditions.checkArgument(!Player.GAME_STATUS_UN_READY.equals(player.getGameStatus()), "目前阶段不允许的操作");
         PlayerRoundInfo playerRoundInfo = roundManager.findPlayerRoundInfo(player);
@@ -136,6 +133,8 @@ public class PlayerManager {
             lookCardOption(playerRoundInfo);
         } else if (GameConsts.ABANDON_CARD_BUTTON.equals(buttonType)) {
             abandonCardOption(playerRoundInfo);
+        } else if (GameConsts.ADD_CHIP.equals(buttonType)) {
+            addChipOption(playerRoundInfo, param);
         } else if (buttonType.startsWith(GameConsts.FIGHT_PLAYER_BUTTON)) {
             //对拼操作
             fightOption(playerRoundInfo, buttonType.replaceAll(GameConsts.FIGHT_PLAYER_BUTTON, ""));
@@ -145,11 +144,55 @@ public class PlayerManager {
     }
 
     /**
+     * 增加筹码
+     */
+    private void addChipOption(PlayerRoundInfo playerRoundInfo, Map<String, String> param) {
+        int chipNum = Integer.parseInt(param.get("chipNum"));
+        RoundInfo roundInfo = playerRoundInfo.getRoundInfo();
+        roundInfo.judgeChipNumber(chipNum, playerRoundInfo.getCardStatus());
+        roundInfo.setMinAddChipNumber(chipNum, playerRoundInfo.getCardStatus());
+        Player player = playerRoundInfo.getPlayer();
+        player.setChipNumber(player.getChipNumber() - chipNum);
+        roundInfo.setPoolNumber(roundInfo.getPoolNumber() + chipNum);
+        //执行权流转到下一个玩家
+        PlayerRoundInfo nextPlayerRoundInfo = roundManager.changeNextPlayer();
+        roundInfo.setFightShowContent(String.format("玩家 %s 加入筹码 %s，请玩家 %s 操作",
+                player.getName(), chipNum, nextPlayerRoundInfo.getPlayer().getName()));
+    }
+
+    /**
      * 对拼操作
      */
     private void fightOption(PlayerRoundInfo playerRoundInfo, String fightPlayerName) {
+        //发起方付出对应的筹码
+        RoundInfo roundInfo = playerRoundInfo.getRoundInfo();
+        int chipNum = roundInfo.getMinAddChipNumber(playerRoundInfo.getCardStatus());
+        Player player = playerRoundInfo.getPlayer();
+        player.setChipNumber(player.getChipNumber() - chipNum);
+        roundInfo.setPoolNumber(roundInfo.getPoolNumber() + chipNum);
+        //玩家对拼
+        String fightShowContent ;
+        Player fightPlayer = matchPlayerByName(fightPlayerName);
+        PlayerRoundInfo fightPlayerRoundInfo = roundManager.findPlayerRoundInfo(fightPlayer);
+        if (CardUtils.compareCard(playerRoundInfo.getCards(), fightPlayerRoundInfo.getCards())) {
+            //战胜
+            fightPlayerRoundInfo.setCardStatus(PlayerRoundInfo.CARD_STATUS_FAILED);
+            fightShowContent = String.format("玩家 %s 击败了 玩家 %s", player.getName(), fightPlayer.getName());
+        } else {
+            //战败
+            playerRoundInfo.setCardStatus(PlayerRoundInfo.CARD_STATUS_FAILED);
+            fightShowContent = String.format("玩家 %s 击败了 玩家 %s", fightPlayer.getName(), player.getName());
+        }
 
-
+        if (roundManager.currentRoundIsEnd()){
+            //触发结束流程
+            roundManager.settleAccountsRound();
+        } else {
+            //执行权流转到下一个玩家
+            PlayerRoundInfo nextPlayerRoundInfo = roundManager.changeNextPlayer();
+            roundInfo.setFightShowContent(String.format("%s，请玩家 %s 操作",
+                    fightShowContent, nextPlayerRoundInfo.getPlayer().getName()));
+        }
     }
 
     /**
@@ -158,9 +201,17 @@ public class PlayerManager {
     private void abandonCardOption(PlayerRoundInfo playerRoundInfo) {
         Preconditions.checkArgument(!PlayerRoundInfo.CARD_STATUS_ABANDON.equals(playerRoundInfo.getCardStatus()), "你已经弃过牌");
         playerRoundInfo.setCardStatus(PlayerRoundInfo.CARD_STATUS_ABANDON);
-
+        RoundInfo roundInfo = playerRoundInfo.getRoundInfo();
         //战局影响
-
+        if (roundManager.currentRoundIsEnd()){
+            //触发结束流程
+            roundManager.settleAccountsRound();
+        } else {
+            //执行权流转到下一个玩家
+            PlayerRoundInfo nextPlayerRoundInfo = roundManager.changeNextPlayer();
+            roundInfo.setFightShowContent(String.format("%s 玩家弃牌，请玩家 %s 操作",
+                    playerRoundInfo.getPlayer().getName(), nextPlayerRoundInfo.getPlayer().getName()));
+        }
 
     }
 
@@ -170,9 +221,11 @@ public class PlayerManager {
     private void lookCardOption(PlayerRoundInfo playerRoundInfo) {
         Preconditions.checkArgument(PlayerRoundInfo.CARD_STATUS_UN_LOOK.equals(playerRoundInfo.getCardStatus()), "只有焖牌才可以请求看牌");
         playerRoundInfo.setCardStatus(PlayerRoundInfo.CARD_STATUS_LOOK);
-
-        //战局影响
-
+        RoundInfo roundInfo = playerRoundInfo.getRoundInfo();
+        //记录在第几轮看牌，用于喜钱判断
+        playerRoundInfo.setLookRoundNum(roundInfo.getRoundNum());
+        roundInfo.setFightShowContent(String.format("%s 玩家看牌，请继续操作",
+                playerRoundInfo.getPlayer().getName()));
     }
 
 

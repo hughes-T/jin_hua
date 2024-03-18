@@ -90,10 +90,12 @@ public class GameEngine {
 
         if (!ObjectUtils.isEmpty(roundManager.getBeforeRoundCache())) {
             //拼接上局战果
+            showText.add("----上一局结果----");
             showText.add(roundManager.getBeforeRoundCache().getResultShowContent());
             showText.add("------------------------");
         }
         //拼接当前战局
+        showText.add(String.format("----当前局第%s轮----", roundManager.getCurrentRoundCache().getRoundNum()));
         showText.add(roundManager.getCurrentRoundCache().getFightShowContent());
         showText.add("------------------------");
         //获取对应的回合
@@ -110,6 +112,7 @@ public class GameEngine {
                 showButtons.add(GameConsts.LOOK_CARD_BUTTON);
             }
             showButtons.add(GameConsts.ABANDON_CARD_BUTTON);
+            showButtons.add(GameConsts.ADD_CHIP);
             if (roundManager.getCurrentRoundCache().getRoundNum() > 2) {
                 //可对拼的玩家
                 for (Player otherPlayer : playerManager.getAllPlayer()) {
@@ -164,7 +167,7 @@ public class GameEngine {
             }
         }
         //玩家游戏操作
-        playerManager.playerOption(userToken, buttonType);
+        playerManager.playerOption(userToken, buttonType, param);
         return ApiResult.success();
     }
 

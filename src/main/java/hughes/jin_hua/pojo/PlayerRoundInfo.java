@@ -74,6 +74,9 @@ public class PlayerRoundInfo {
     }
 
 
-    //在第几轮看牌
+    /**
+     * 在第几轮看牌，为 null 代表一直在焖
+     */
+    private Integer lookRoundNum;
 
 }

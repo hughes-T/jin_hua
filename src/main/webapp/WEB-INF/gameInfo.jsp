@@ -150,6 +150,8 @@
                         buttonReq(buttonId); // 传递完整的按钮 ID
                     };
                     buttonContainer.appendChild(newButton); // 添加按钮到容器
+                } else {
+                    document.getElementById(button).style.display = "block";
                 }
             }
         });

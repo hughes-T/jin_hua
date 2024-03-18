@@ -32,4 +32,11 @@ public class ParamUtils {
     }
 
 
+    /**
+     * 喜钱
+     */
+    public static int happyMoneyNumber(){
+        return 10;
+    }
+
 }

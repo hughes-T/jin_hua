@@ -200,6 +200,18 @@ public class RoundManager {
                         playerRoundInfo.getCardsDesc(), playerRoundInfo.getPutIntoTotal()));
             }
         }
+        //喜钱判定
+        if (winPlayerRoundInfo.getLookRoundNum() == null || winPlayerRoundInfo.getLookRoundNum() > 2) {
+            if (CardUtils.isHappyMoneyCard(winPlayerRoundInfo.getCards())) {
+                resultShow.add(String.format("胜者为喜钱牌型，其他玩家额外给 %s 筹码", ParamUtils.happyMoneyNumber()));
+                for (PlayerRoundInfo playerRoundInfo : playerRoundInfos) {
+                    if (!playerRoundInfo.getPlayer().equals(winPlayer)) {
+                        playerRoundInfo.getPlayer().setChipNumber(playerRoundInfo.getPlayer().getChipNumber() - ParamUtils.happyMoneyNumber());
+                        winPlayer.setChipNumber(winPlayer.getChipNumber() + ParamUtils.happyMoneyNumber());
+                    }
+                }
+            }
+        }
         currentRoundCache.setResultShowContent(resultShow.toString());
         //开始新的一局
         startRound(winPlayer);

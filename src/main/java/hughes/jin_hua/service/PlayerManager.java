@@ -187,10 +187,12 @@ public class PlayerManager {
         if (CardUtils.compareCard(playerRoundInfo.getCards(), fightPlayerRoundInfo.getCards())) {
             //战胜
             fightPlayerRoundInfo.setCardStatus(PlayerRoundInfo.CARD_STATUS_FAILED);
+            fightPlayerRoundInfo.setDefeaterName(player.getName());
             fightShowContent = String.format("玩家 %s 击败了 玩家 %s", player.getName(), fightPlayer.getName());
         } else {
             //战败
             playerRoundInfo.setCardStatus(PlayerRoundInfo.CARD_STATUS_FAILED);
+            playerRoundInfo.setDefeaterName(fightPlayerName);
             fightShowContent = String.format("玩家 %s 击败了 玩家 %s", fightPlayer.getName(), player.getName());
         }
 
@@ -234,8 +236,9 @@ public class PlayerManager {
         RoundInfo roundInfo = playerRoundInfo.getRoundInfo();
         //记录在第几轮看牌，用于喜钱判断
         playerRoundInfo.setLookRoundNum(roundInfo.getRoundNum());
-        roundInfo.setFightShowContent(String.format("%s 玩家看牌，请继续操作",
-                playerRoundInfo.getPlayer().getName()));
+        int chipNum = roundInfo.getMinAddChipNumber(PlayerRoundInfo.CARD_STATUS_LOOK);
+        roundInfo.setFightShowContent(String.format("%s 玩家看牌，请继续操作，最少需要上注 %s",
+                playerRoundInfo.getPlayer().getName(), chipNum));
     }
 
 

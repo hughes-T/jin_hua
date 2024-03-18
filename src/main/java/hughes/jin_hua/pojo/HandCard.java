@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 
+import java.math.BigDecimal;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -72,7 +73,7 @@ public class HandCard {
             return handCardList;
         }
         handCardList = handCardList.stream()
-                .sorted(Comparator.comparing(Card::getPointLevel))
+                .sorted(Comparator.comparingInt(e -> (e.getPointLevel() + e.getTypeLevel())))
                 .collect(Collectors.toList());
         sort = true;
         return handCardList;
@@ -110,7 +111,7 @@ public class HandCard {
      *
      * @return
      */
-    private Boolean isStraightFlower() {
+    public Boolean isStraightFlower() {
         return isFlower() && isStraight();
     }
 
@@ -133,11 +134,26 @@ public class HandCard {
     }
 
     /**
-     * 计算得分  最后一位-->红黑梅芳  往前两位-->单排最大  往前两位-->对子数值 往前两位-->金花最大数值  往前两位-->顺金数值  往前两位-->豹子数值
+     * 计算得分
      *
-     * @return
+     * 最后两位-->第三张牌黑红梅芳
+     * 往前两位-->第二张牌黑红梅芳
+     * 往前两位-->单牌最大牌黑红梅芳
+     *
+     * 往前两位-->第三张牌最大
+     * 往前两位-->第二张牌最大
+     * 往前两位-->单牌最大
+     *
+     * 往前两位-->对子数值 往前两位-->金花最大数值  往前两位-->顺金数值  往前两位-->豹子数值
+     *
      */
-    public Integer calculate() {
+    public BigDecimal calculate() {
+        List<Card> sortCardList = getSortCardList();
+        String thirdTypeScore = String.format("%02d", sortCardList.get(0).getTypeLevel());
+        String thirdPointScore = String.format("%02d", sortCardList.get(0).getPointLevel());
+        String secondTypeScore = String.format("%02d", sortCardList.get(1).getTypeLevel());
+        String secondPointScore = String.format("%02d", sortCardList.get(1).getPointLevel());
+
         Integer pointMaxScoreInt = getItemPointMaxScore();
         String pointMaxScore = String.format("%02d",pointMaxScoreInt);
         String typeMaxScore = String.format("%02d", getitemTypeMaxScore());
@@ -147,8 +163,9 @@ public class HandCard {
         String flowerValue = isFlower() ? String.format("%02d", pointMaxScoreInt) : "00";
         String straightFlowerValue = isStraightFlower() ? String.format("%02d", pointMaxScoreInt) : "00";
         String leopardValue = isLeopard() ? String.format("%02d", pointMaxScoreInt) : "00";
-        String value = leopardValue + straightFlowerValue + flowerValue + straightValue + doubleValue + pointMaxScore + typeMaxScore;
-        return Integer.parseInt(value);
+        String value = leopardValue + straightFlowerValue + flowerValue + straightValue + doubleValue
+                + pointMaxScore + secondPointScore + thirdPointScore + typeMaxScore + secondTypeScore + thirdTypeScore;
+        return new BigDecimal(value);
     }
 
 }

@@ -196,8 +196,8 @@ public class RoundManager {
                 resultShow.add(String.format("%s 玩家牌型为 %s，赢得筹码 %s", playerRoundInfo.getPlayer().getName(),
                         playerRoundInfo.getCardsDesc(), (currentRoundCache.getPoolNumber() - playerRoundInfo.getPutIntoTotal())));
             } else {
-                resultShow.add(String.format("%s 玩家牌型为 %s，输掉筹码 %s", playerRoundInfo.getPlayer().getName(),
-                        playerRoundInfo.getCardsDesc(), playerRoundInfo.getPutIntoTotal()));
+                resultShow.add(String.format("%s 玩家牌型为 %s，状态 %s, 输掉筹码 %s",
+                        playerRoundInfo.getCardsDesc(), playerRoundInfo.getPlayer().getName(),playerRoundInfo.getCardStatusDesc(), playerRoundInfo.getPutIntoTotal()));
             }
         }
         //喜钱判定

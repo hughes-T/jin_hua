@@ -65,7 +65,7 @@ public class PlayerRoundInfo {
             return "已弃牌";
         }
         if (CARD_STATUS_FAILED.equals(cardStatus)){
-            return String.format("已被 %s 击败", defeaterName);
+            return String.format("被 %s 击败", defeaterName);
         }
         return null;
     }

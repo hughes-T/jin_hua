@@ -1,6 +1,7 @@
 package hughes.jin_hua.pojo;
 
 import lombok.Data;
+import lombok.Getter;
 import lombok.experimental.Accessors;
 
 @Data
@@ -9,23 +10,65 @@ public class Card {
 
     private String name;
 
-    //黑红梅方
-    public static final String TYPE_SPADE = "♠";
-    public static final String TYPE_RED_HEART = "♥";
-    public static final String TYPE_BLOSSOM = "♣";
-    public static final String TYPE_BLOCK = "♦";
+
+    /**
+     * 黑红梅方
+     */
     private String type;
 
     public static final String POINT_A = "A";
     public static final String POINT_K = "K";
     public static final String POINT_Q = "Q";
     public static final String POINT_J = "J";
+    /**
+     * 数值
+     * "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"
+     */
     private String point;
 
-    private Integer level;
+    /**
+     * 得分
+     * 1,2,3,4,5.....13
+     */
+    private Integer pointLevel;
 
-    public String getDesc(){
+
+    /**
+     * 得分
+     * 1,2,3,4
+     */
+    private Integer typeLevel;
+
+    public String getDesc() {
         return point + type;
     }
+
+    public Integer getNextLevel() {
+        if (pointLevel > 0 && pointLevel < 12) {
+            return pointLevel;
+        } else {
+            //13
+            return 1;
+        }
+
+    }
+
+    @Getter
+    public enum TypeEum {
+
+        TYPE_SPADE("♠", 4),
+        TYPE_RED_HEART("♥", 3),
+        TYPE_BLOSSOM("♣", 2),
+        TYPE_BLOCK("♦", 1),
+        ;
+
+        TypeEum(String type, Integer typePoint) {
+            this.type = type;
+            this.typePoint = typePoint;
+        }
+        private Integer typePoint;
+        private String type;
+    }
+
 
 }

@@ -138,19 +138,18 @@ public class GameEngine {
             //非本人回合
             showText.add(String.format("<b> 等待 %s 操作 </b>", roundManager.getCurrentPlayerRound().getPlayer().getName()));
         }
-        showText.add("------------------------");
-        //阶段、牌型
-        showText.add("你的阶段：" + playerRoundInfo.getCardStatusDesc());
-        if (!PlayerRoundInfo.CARD_STATUS_UN_LOOK.equals(playerRoundInfo.getCardStatus())) {
-            //非暗阶段 加载自己的信息
-            showText.add(String.format("牌型 %s", playerRoundInfo.getCardsDesc()));
-        }
-        //你当前的筹码剩余
-        showText.add("你当前的筹码剩余：" + player.getChipNumber());
-        //加载其他人信息
+        //加载所有人信息
         showText.add("------------------------");
         for (Player otherPlayer : playerManager.getAllPlayer()) {
             if (otherPlayer.equals(player)) {
+                if (PlayerRoundInfo.CARD_STATUS_UN_LOOK.equals(playerRoundInfo.getCardStatus())) {
+                    showText.add(String.format("<b> 你处于阶段： %s ，筹码剩余：%s </b>",
+                            playerRoundInfo.getCardStatusDesc(), otherPlayer.getChipNumber()));
+                } else {
+                    //非暗阶段 加载牌型
+                    showText.add(String.format("<b> 你处于阶段： %s ，牌型 %s ，筹码剩余：%s </b>",
+                            playerRoundInfo.getCardStatusDesc(), playerRoundInfo.getCardsDesc(), otherPlayer.getChipNumber()));
+                }
                 continue;
             }
             PlayerRoundInfo otherPlayerRound = roundManager.findPlayerRoundInfo(otherPlayer);

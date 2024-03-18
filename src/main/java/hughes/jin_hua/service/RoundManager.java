@@ -1,14 +1,12 @@
 package hughes.jin_hua.service;
 
 import com.google.common.collect.Lists;
-import hughes.jin_hua.constants.GameConsts;
 import hughes.jin_hua.pojo.Card;
 import hughes.jin_hua.pojo.Player;
 import hughes.jin_hua.pojo.PlayerRoundInfo;
 import hughes.jin_hua.pojo.RoundInfo;
 import hughes.jin_hua.utils.CardUtils;
 import hughes.jin_hua.utils.ParamUtils;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
@@ -164,7 +162,7 @@ public class RoundManager {
                 playerRoundInfo.getCards().add(cards.remove(0));
             });
         }
-        playerRoundInfos.forEach(playerRoundInfo -> playerRoundInfo.getCards().sort(Comparator.comparing(Card::getLevel).reversed()));
+        playerRoundInfos.forEach(playerRoundInfo -> playerRoundInfo.getCards().sort(Comparator.comparing(Card::getPointLevel).reversed()));
     }
 
 

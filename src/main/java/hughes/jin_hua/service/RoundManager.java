@@ -192,11 +192,17 @@ public class RoundManager {
         winPlayer.setChipNumber(winPlayer.getChipNumber() + currentRoundCache.getPoolNumber());
         //登记战果
         StringJoiner resultShow = new StringJoiner("\n");
-        resultShow.add(String.format("%s 获得赢得对局，收获筹码 %s", winPlayer.getName(), currentRoundCache.getPoolNumber()));
         resultShow.add("所有玩家牌型公布：");
         for (PlayerRoundInfo playerRoundInfo : playerRoundInfos) {
-            resultShow.add(String.format("%s 玩家牌型为 %s", playerRoundInfo.getPlayer().getName(), playerRoundInfo.getCardsDesc()));
+            if (playerRoundInfo.getPlayer().equals(winPlayer)){
+                resultShow.add(String.format("%s 玩家牌型为 %s，赢得筹码 %s", playerRoundInfo.getPlayer().getName(),
+                        playerRoundInfo.getCardsDesc(), (currentRoundCache.getPoolNumber() - playerRoundInfo.getPutIntoTotal())));
+            } else {
+                resultShow.add(String.format("%s 玩家牌型为 %s，输掉筹码 %s", playerRoundInfo.getPlayer().getName(),
+                        playerRoundInfo.getCardsDesc(), playerRoundInfo.getPutIntoTotal()));
+            }
         }
+        currentRoundCache.setResultShowContent(resultShow.toString());
         //开始新的一局
         startRound(winPlayer);
     }

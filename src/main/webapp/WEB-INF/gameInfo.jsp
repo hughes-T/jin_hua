@@ -52,6 +52,12 @@
             justify-content: center;
             align-items: center;
         }
+
+        .button-container-2 {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
     </style>
     <title>实时信息</title>
 </head>
@@ -62,12 +68,17 @@
     <div id="showText"></div>
     <br>
     <div class="button-container">
-        <button id="refreshButton" onclick="loadPage()">刷新</button>
         <%-- 显示或隐藏按钮 --%>
         <button id="lookCardButton" onclick="buttonReq('lookCardButton')">看牌</button>
         <button id="abandonCardButton" onclick="buttonReq('abandonCardButton')">弃牌</button>
+    </div>
+    <br>
+    <br>
+    <br>
+    <div class="button-container-2">
         <button id="startGameButton" onclick="buttonReq('startGameButton')">开始游戏</button>
         <button id="restartGameButton" onclick="buttonReq('restartGameButton')">重启游戏</button>
+        <button id="refreshButton" onclick="loadPage()">刷新</button>
     </div>
 </div>
 
@@ -115,10 +126,33 @@
      */
     function pageBuild(data) {
         var buttonContainer = document.querySelector(".button-container");
-        buttonContainer.innerHTML = ""; // 清空按钮容器
+        // buttonContainer.innerHTML = ""; // 清空按钮容器
 
         const showText = document.getElementById("showText");
         showText.innerHTML = formatText(data.showText);
+
+        // 动态生成以 "fightPlayerButton_" 前缀的按钮
+        data.showButtons.forEach(button => {
+            if (button.startsWith("un_fightPlayerButton_")) {
+                const buttonId = button.replaceAll("un_", "");
+                if (document.getElementById(buttonId)){
+                    document.getElementById(buttonId).style.display = "none";
+                }
+            }
+            if (button.startsWith("fightPlayerButton_")) {
+                if (!document.getElementById(button)){
+                    const buttonId = button;
+                    const buttonText = "对拼" + button.replaceAll("fightPlayerButton_", ""); // 获取按钮文本
+                    const newButton = document.createElement("button");
+                    newButton.id = buttonId;
+                    newButton.textContent = buttonText;
+                    newButton.onclick = function() {
+                        buttonReq(buttonId); // 传递完整的按钮 ID
+                    };
+                    buttonContainer.appendChild(newButton); // 添加按钮到容器
+                }
+            }
+        });
 
         if (data.showButtons.includes("abandonCardButton")) {
             document.getElementById("abandonCardButton").style.display = "block";
@@ -144,32 +178,34 @@
         }
 
         if (data.showButtons.includes("addChip")) {
-            var chipInput = document.createElement("input");
-            chipInput.type = "number";
-            chipInput.id = "chipInput";
-            chipInput.placeholder = "请输入筹码数量";
-            buttonContainer.appendChild(chipInput);
+            var chipInput = document.querySelector("#chipInput");
+            var confirmButton = document.querySelector("#confirmButton");
 
-            var confirmButton = document.createElement("button");
-            confirmButton.innerText = "确定";
-            confirmButton.setAttribute("onclick", "addChipReq()");
-            buttonContainer.appendChild(confirmButton);
-        }
+            if (chipInput && confirmButton) {
+                chipInput.style.display = "block";
+                confirmButton.style.display = "block";
+            } else {
+                chipInput = document.createElement("input");
+                chipInput.type = "number";
+                chipInput.id = "chipInput";
+                chipInput.placeholder = "请输入筹码数量";
+                buttonContainer.appendChild(chipInput);
 
-        // 动态生成以 "fightPlayerButton_" 前缀的按钮
-        data.showButtons.forEach(button => {
-            if (button.startsWith("fightPlayerButton_")) {
-                const buttonId = button;
-                const buttonText = button.replaceAll("fightPlayerButton_", ""); // 获取按钮文本
-                const newButton = document.createElement("button");
-                newButton.id = buttonId;
-                newButton.textContent = buttonText;
-                newButton.onclick = function() {
-                    buttonReq(buttonId); // 传递完整的按钮 ID
-                };
-                buttonContainer.appendChild(newButton); // 添加按钮到容器
+                confirmButton = document.createElement("button");
+                confirmButton.id = "confirmButton";
+                confirmButton.innerText = "确定";
+                confirmButton.setAttribute("onclick", "buttonReq('addChip')");
+                buttonContainer.appendChild(confirmButton);
             }
-        });
+        } else {
+            var chipInput = document.querySelector("#chipInput");
+            var confirmButton = document.querySelector("#confirmButton");
+
+            if (chipInput && confirmButton) {
+                chipInput.style.display = "none";
+                confirmButton.style.display = "none";
+            }
+        }
 
     }
 
@@ -187,7 +223,7 @@
      * type
      */
     function buttonReq(type) {
-        if (type == 'restartGameButton'){
+        if (type === 'restartGameButton'){
             let confirmed = confirm('确定要重启游戏吗，这将会清除所有玩家的信息');
             if (!confirmed) {
                 return;
@@ -196,7 +232,7 @@
         const reqParam = {};
         reqParam['userToken'] = userToken;
         reqParam['buttonType'] = type;
-        if (buttonId === 'addChip') {
+        if (type === 'addChip') {
             var chipInput = document.getElementById("chipInput");
             reqParam['chipNum'] = chipInput.value;
         }

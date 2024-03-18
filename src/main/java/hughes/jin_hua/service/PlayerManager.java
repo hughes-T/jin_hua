@@ -153,11 +153,19 @@ public class PlayerManager {
         roundInfo.setMinAddChipNumber(chipNum, playerRoundInfo.getCardStatus());
         Player player = playerRoundInfo.getPlayer();
         player.setChipNumber(player.getChipNumber() - chipNum);
+        playerRoundInfo.setPutIntoCurrent(chipNum);
+        playerRoundInfo.setPutIntoTotal(playerRoundInfo.getPutIntoTotal() + chipNum);
         roundInfo.setPoolNumber(roundInfo.getPoolNumber() + chipNum);
         //执行权流转到下一个玩家
         PlayerRoundInfo nextPlayerRoundInfo = roundManager.changeNextPlayer();
-        roundInfo.setFightShowContent(String.format("玩家 %s 加入筹码 %s，请玩家 %s 操作",
-                player.getName(), chipNum, nextPlayerRoundInfo.getPlayer().getName()));
+        if (PlayerRoundInfo.CARD_STATUS_UN_LOOK.equals(playerRoundInfo.getCardStatus())) {
+            roundInfo.setFightShowContent(String.format("玩家 %s 焖加 %s 筹码 ，请玩家 %s 操作",
+                    player.getName(), chipNum, nextPlayerRoundInfo.getPlayer().getName()));
+        } else {
+            roundInfo.setFightShowContent(String.format("玩家 %s 看牌加 %s 筹码 ，请玩家 %s 操作",
+                    player.getName(), chipNum, nextPlayerRoundInfo.getPlayer().getName()));
+        }
+
     }
 
     /**
@@ -169,6 +177,8 @@ public class PlayerManager {
         int chipNum = roundInfo.getMinAddChipNumber(playerRoundInfo.getCardStatus());
         Player player = playerRoundInfo.getPlayer();
         player.setChipNumber(player.getChipNumber() - chipNum);
+        playerRoundInfo.setPutIntoCurrent(chipNum);
+        playerRoundInfo.setPutIntoTotal(playerRoundInfo.getPutIntoTotal() + chipNum);
         roundInfo.setPoolNumber(roundInfo.getPoolNumber() + chipNum);
         //玩家对拼
         String fightShowContent ;

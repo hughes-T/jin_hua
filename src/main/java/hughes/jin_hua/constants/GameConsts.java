@@ -21,6 +21,8 @@ public class GameConsts {
      */
     public static final String FIGHT_PLAYER_BUTTON = "fightPlayerButton_";
 
+    public static final String UN_FIGHT_PLAYER_BUTTON = "un_fightPlayerButton_";
+
     /**
      * 上注
      */

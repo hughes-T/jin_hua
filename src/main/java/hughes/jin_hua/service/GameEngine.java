@@ -97,15 +97,20 @@ public class GameEngine {
         //拼接当前战局
         showText.add(String.format("----当前局第%s轮----", roundManager.getCurrentRoundCache().getRoundNum()));
         showText.add(roundManager.getCurrentRoundCache().getFightShowContent());
-        showText.add("------------------------");
+        showText.add(String.format("当前池底为 %s", roundManager.getCurrentRoundCache().getPoolNumber()));
         //获取对应的回合
         PlayerRoundInfo playerRoundInfo = roundManager.findPlayerRoundInfo(player);
-        //阶段、牌型
-        showText.add("阶段：" + playerRoundInfo.getCardStatusDesc());
-        if (!PlayerRoundInfo.CARD_STATUS_UN_LOOK.equals(playerRoundInfo.getCardStatus())) {
-            //非暗阶段 加载自己的信息
-            showText.add(String.format("牌型 %s", playerRoundInfo.getCardsDesc()));
+
+        //需要隐藏的对拼按钮
+        if (roundManager.getCurrentRoundCache().getRoundNum() < 2 || !roundManager.getCurrentPlayerRound().equals(playerRoundInfo)) {
+            for (Player otherPlayer : playerManager.getAllPlayer()) {
+                if (otherPlayer.equals(player)) {
+                    continue;
+                }
+                showButtons.add(GameConsts.UN_FIGHT_PLAYER_BUTTON + otherPlayer.getName());
+            }
         }
+
         if (roundManager.getCurrentPlayerRound().equals(playerRoundInfo)) {
             //本人回合
             if (PlayerRoundInfo.CARD_STATUS_UN_LOOK.equals(playerRoundInfo.getCardStatus())) {
@@ -113,7 +118,7 @@ public class GameEngine {
             }
             showButtons.add(GameConsts.ABANDON_CARD_BUTTON);
             showButtons.add(GameConsts.ADD_CHIP);
-            if (roundManager.getCurrentRoundCache().getRoundNum() > 2) {
+            if (roundManager.getCurrentRoundCache().getRoundNum() >= 2) {
                 //可对拼的玩家
                 for (Player otherPlayer : playerManager.getAllPlayer()) {
                     if (otherPlayer.equals(player)) {
@@ -123,12 +128,22 @@ public class GameEngine {
                     if (PlayerRoundInfo.CARD_STATUS_UN_LOOK.equals(otherPlayerRound.getCardStatus())
                             || PlayerRoundInfo.CARD_STATUS_LOOK.equals(otherPlayerRound.getCardStatus())) {
                         showButtons.add(GameConsts.FIGHT_PLAYER_BUTTON + otherPlayer.getName());
+                    } else {
+                        showButtons.add(GameConsts.UN_FIGHT_PLAYER_BUTTON + otherPlayer.getName());
                     }
                 }
             }
+            showText.add("<b> 当前为你的操作回合 </b>");
         } else {
             //非本人回合
-            showText.add(String.format("等待 %s 操作", roundManager.getCurrentPlayerRound().getPlayer().getName()));
+            showText.add(String.format("<b> 等待 %s 操作 </b>", roundManager.getCurrentPlayerRound().getPlayer().getName()));
+        }
+        showText.add("------------------------");
+        //阶段、牌型
+        showText.add("你的阶段：" + playerRoundInfo.getCardStatusDesc());
+        if (!PlayerRoundInfo.CARD_STATUS_UN_LOOK.equals(playerRoundInfo.getCardStatus())) {
+            //非暗阶段 加载自己的信息
+            showText.add(String.format("牌型 %s", playerRoundInfo.getCardsDesc()));
         }
         //你当前的筹码剩余
         showText.add("你当前的筹码剩余：" + player.getChipNumber());

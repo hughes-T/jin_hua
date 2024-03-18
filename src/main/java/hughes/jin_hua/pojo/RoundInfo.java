@@ -24,12 +24,12 @@ public class RoundInfo {
     /**
      * 上一轮焖牌筹码
      */
-    private Integer lastUnLookChipNumber;
+    private Integer lastUnLookChipNumber = ParamUtils.getBottomChipNumber();
 
     /**
      * 上一轮看牌筹码
      */
-    private Integer lastLookChipNumber;
+    private Integer lastLookChipNumber = (ParamUtils.getBottomChipNumber() * 2);
 
     /**
      * 战局提示
@@ -47,17 +47,15 @@ public class RoundInfo {
      */
     public int getMinAddChipNumber(String cardStatus) {
         if (PlayerRoundInfo.CARD_STATUS_UN_LOOK.equals(cardStatus)) {
-            if (!ObjectUtils.isEmpty(lastUnLookChipNumber)) {
-                return lastUnLookChipNumber;
+            if (lastLookChipNumber % 2 ==0){
+                return Math.max(lastUnLookChipNumber, lastLookChipNumber / 2);
+            } else {
+                return Math.max(lastUnLookChipNumber, (lastLookChipNumber + 1) / 2);
             }
-            return ParamUtils.getBottomChipNumber();
         }
 
         if (PlayerRoundInfo.CARD_STATUS_LOOK.equals(cardStatus)) {
-            if (!ObjectUtils.isEmpty(lastLookChipNumber)) {
-                return lastLookChipNumber;
-            }
-            return ParamUtils.getBottomChipNumber() * 2;
+            return Math.max(lastUnLookChipNumber * 2, lastLookChipNumber);
         }
 
         throw new IllegalArgumentException("不被允许的牌状态操作");

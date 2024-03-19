@@ -38,4 +38,11 @@ public class GameConsts {
      * 重启游戏
      */
     public static final String RESTART_GAME_BUTTON = "restartGameButton";
+
+    /**
+     * 查询玩家
+     */
+    public static final String QUERY_PLAYER_BUTTON = "queryPlayerButton";
+
+
 }

@@ -9,9 +9,11 @@ import hughes.jin_hua.pojo.ApiResult;
 import hughes.jin_hua.pojo.Player;
 import hughes.jin_hua.pojo.PlayerRoundInfo;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
 import javax.annotation.Resource;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringJoiner;
@@ -85,7 +87,7 @@ public class GameEngine {
                 //房主拥有开始 开始游戏按钮权限
                 showButtons.add(GameConsts.START_GAME_BUTTON);
             }
-            return ApiResult.success(ImmutableMap.of("showText", "等待开始", "showButtons", showButtons));
+            return ApiResult.success(ImmutableMap.of("showText", "等待房主开始", "showButtons", showButtons));
         }
 
         if (!ObjectUtils.isEmpty(roundManager.getBeforeRoundCache())) {
@@ -183,6 +185,35 @@ public class GameEngine {
         //玩家游戏操作
         playerManager.playerOption(userToken, buttonType, param);
         return ApiResult.success();
+    }
+
+    public ApiResult managerButtonReq(Map<String, String> param) {
+        String buttonType = param.get("buttonType");
+        if (GameConsts.START_GAME_BUTTON.equals(buttonType)) {
+            //开始游戏
+            changeGameStatus(GAME_STATUS_START);
+            return ApiResult.success();
+        }
+        if (GameConsts.RESTART_GAME_BUTTON.equals(buttonType)) {
+            //重启游戏
+            changeGameStatus(GAME_STATUS_CLOSE);
+            changeGameStatus(GAME_STATUS_CREATE_ING);
+            return ApiResult.success();
+        }
+        if (GameConsts.QUERY_PLAYER_BUTTON.equals(buttonType)) {
+            //查询玩家
+            List<Player> allPlayer = playerManager.getAllPlayer();
+            if (CollectionUtils.isEmpty(allPlayer)){
+                return ApiResult.success("暂无玩家");
+            }
+            StringJoiner sj = new StringJoiner("，", "当前玩家：","。");
+            for (Player player : allPlayer) {
+                sj.add(player.getName());
+            }
+            return ApiResult.success(sj.toString());
+        }
+        return ApiResult.success();
+
     }
 
 

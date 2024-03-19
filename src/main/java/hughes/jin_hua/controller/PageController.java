@@ -23,4 +23,8 @@ public class PageController {
         return "gameInfo";
     }
 
+    @GetMapping("/manager")
+    public String manager(){
+        return "manager";
+    }
 }

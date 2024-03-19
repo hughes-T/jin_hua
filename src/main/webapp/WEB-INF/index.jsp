@@ -124,7 +124,7 @@
                 var responseData = JSON.parse(xhr.responseText);
                 if (responseData.success == true) {
                     // 将返回数据存储到本地存储中
-                    localStorage.setItem("userToken", JSON.stringify(responseData.data));
+                    localStorage.setItem("userToken", responseData.data);
                     console.log("数据已存储到本地存储中");
                     //跳转到实时信息页面
                     window.location.href = "gameInfo";

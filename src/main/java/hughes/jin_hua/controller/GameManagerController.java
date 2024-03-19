@@ -27,6 +27,12 @@ public class GameManagerController extends GlobalExceptionHandler {
         return engine.changeGameStatus(status);
     }
 
+    @ResponseBody
+    @PostMapping("/buttonReq")
+    public ApiResult buttonReq(@RequestBody Map<String, String> param){
+        return engine.managerButtonReq(param);
+    }
+
     /**
      * 查询游戏状态
      */

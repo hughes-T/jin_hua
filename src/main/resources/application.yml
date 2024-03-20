@@ -1,5 +1,5 @@
 server:
-  port: 8004
+  port: 8022
 #
 #  tomcat:
 #    uri-encoding: UTF-8
@@ -43,4 +43,13 @@ logging:
   level:
     com:
       example:
-        mapper : debug
+      mapper: debug
+
+#初始化筹码
+initChipNumber: 200
+#底
+bottomChipNumber: 1
+#单次回合筹码焖注上限
+roundMaxChipNumber: 10
+#喜钱
+happyMoneyNumber: 10

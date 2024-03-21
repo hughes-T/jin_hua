@@ -90,10 +90,9 @@ public class HandCard {
     /**
      * 是否是顺子
      */
-    private Boolean isStraight() {
+    public Boolean isStraight() {
         List<Card> sortCardList = getSortCardList();
-        return sortCardList.get(0).getPointLevel() != 11
-                && Objects.equals(sortCardList.get(0).getNextLevel(), sortCardList.get(1).getPointLevel())
+        return Objects.equals(sortCardList.get(0).getNextLevel(), sortCardList.get(1).getPointLevel())
                 && Objects.equals(sortCardList.get(1).getNextLevel(), sortCardList.get(2).getPointLevel());
     }
 

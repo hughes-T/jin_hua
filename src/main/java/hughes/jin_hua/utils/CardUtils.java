@@ -66,47 +66,26 @@ public class CardUtils {
 //        cards.add(new Card()
 //                .setType(Card.TypeEum.TYPE_SPADE.getType())
 //                .setTypeLevel(Card.TypeEum.TYPE_SPADE.getTypePoint())
-//                .setPointLevel(13)
-//                .setPoint("A")
-//                .setName(Card.TypeEum.TYPE_SPADE.getType() + "A")
+//                .setPointLevel(11)
+//                .setPoint("Q")
+//                .setName(Card.TypeEum.TYPE_SPADE.getType() + "6")
 //        );
 //        cards.add(new Card()
 //                .setType(Card.TypeEum.TYPE_RED_HEART.getType())
 //                .setTypeLevel(Card.TypeEum.TYPE_RED_HEART.getTypePoint())
-//                .setPointLevel(10)
-//                .setPoint("J")
-//                .setName(Card.TypeEum.TYPE_RED_HEART.getType() + "J")
+//                .setPointLevel(12)
+//                .setPoint("K")
+//                .setName(Card.TypeEum.TYPE_RED_HEART.getType() + "K")
 //        );
 //        cards.add(new Card()
 //                .setType(Card.TypeEum.TYPE_SPADE.getType())
 //                .setTypeLevel(Card.TypeEum.TYPE_SPADE.getTypePoint())
-//                .setPointLevel(7)
-//                .setPoint("8")
-//                .setName(Card.TypeEum.TYPE_SPADE.getType() + "8")
-//        );
-//        List<Card> cards2 = Lists.newArrayList();
-//        cards2.add(new Card()
-//                .setType(Card.TypeEum.TYPE_BLOSSOM.getType())
-//                .setTypeLevel(Card.TypeEum.TYPE_BLOSSOM.getTypePoint())
 //                .setPointLevel(13)
 //                .setPoint("A")
-//                .setName(Card.TypeEum.TYPE_BLOSSOM.getType() + "A")
+//                .setName(Card.TypeEum.TYPE_SPADE.getType() + "A")
 //        );
-//        cards2.add(new Card()
-//                .setType(Card.TypeEum.TYPE_BLOSSOM.getType())
-//                .setTypeLevel(Card.TypeEum.TYPE_BLOSSOM.getTypePoint())
-//                .setPointLevel(12)
-//                .setPoint("K")
-//                .setName(Card.TypeEum.TYPE_BLOSSOM.getType() + "K")
-//        );
-//        cards2.add(new Card()
-//                .setType(Card.TypeEum.TYPE_BLOCK.getType())
-//                .setTypeLevel(Card.TypeEum.TYPE_BLOCK.getTypePoint())
-//                .setPointLevel(2)
-//                .setPoint("3")
-//                .setName(Card.TypeEum.TYPE_BLOCK.getType() + "3")
-//        );
-//        System.out.println(compareCard(cards, cards2));
+//        HandCard handCard = new HandCard(cards);
+//        System.out.println(handCard.isStraight());
 //    }
 
 }

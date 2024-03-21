@@ -44,8 +44,8 @@ public class Card {
     }
 
     public Integer getNextLevel() {
-        if (pointLevel > 0 && pointLevel < 12) {
-            return pointLevel;
+        if (pointLevel > 0 && pointLevel <= 12) {
+            return pointLevel + 1;
         } else {
             //13
             return 1;

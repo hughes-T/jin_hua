@@ -46,10 +46,10 @@ public class HandCard {
     private Integer getItemPointMaxScore() {
         List<Card> sortCardList = getSortCardList();
         Map<Integer, List<Card>> collect = sortCardList.stream().collect(Collectors.groupingBy(Card::getPointLevel));
-        if(isDouble()){
+        if (isDouble()) {
             for (Integer i : collect.keySet()) {
                 List<Card> cards = collect.get(i);
-                if(cards.size()==2){
+                if (cards.size() == 2) {
                     return i;
                 }
             }
@@ -73,7 +73,8 @@ public class HandCard {
             return handCardList;
         }
         handCardList = handCardList.stream()
-                .sorted(Comparator.comparingInt(e -> (e.getPointLevel() + e.getTypeLevel())))
+                .sorted(Comparator.comparingInt(Card::getPointLevel)
+                        .thenComparingInt(Card::getTypeLevel))
                 .collect(Collectors.toList());
         sort = true;
         return handCardList;
@@ -92,6 +93,10 @@ public class HandCard {
      */
     public Boolean isStraight() {
         List<Card> sortCardList = getSortCardList();
+        if (is23A()) {
+            return true;
+        }
+
         return Objects.equals(sortCardList.get(0).getNextLevel(), sortCardList.get(1).getPointLevel())
                 && Objects.equals(sortCardList.get(1).getNextLevel(), sortCardList.get(2).getPointLevel());
     }
@@ -126,9 +131,17 @@ public class HandCard {
 
     public Boolean is235() {
         List<Card> sortCardList = getSortCardList();
-        return Objects.equals(sortCardList.get(0).getNextLevel(), 2)
-                && Objects.equals(sortCardList.get(1).getNextLevel(), 3)
-                && Objects.equals(sortCardList.get(2).getNextLevel(), 5)
+        return Objects.equals(sortCardList.get(0).getPointLevel(), 2)
+                && Objects.equals(sortCardList.get(1).getPointLevel(), 3)
+                && Objects.equals(sortCardList.get(2).getPointLevel(), 5)
+                && !isFlower();
+    }
+
+    public Boolean is23A() {
+        List<Card> sortCardList = getSortCardList();
+        return Objects.equals(sortCardList.get(0).getPointLevel(), 2)
+                && Objects.equals(sortCardList.get(1).getPointLevel(), 3)
+                && Objects.equals(sortCardList.get(2).getPointLevel(), 13)
                 && !isFlower();
     }
 
@@ -154,7 +167,7 @@ public class HandCard {
         String secondPointScore = String.format("%02d", sortCardList.get(1).getPointLevel());
 
         Integer pointMaxScoreInt = getItemPointMaxScore();
-        String pointMaxScore = String.format("%02d",pointMaxScoreInt);
+        String pointMaxScore = String.format("%02d", pointMaxScoreInt);
         String typeMaxScore = String.format("%02d", getitemTypeMaxScore());
 
         String doubleValue = isDouble() ? String.format("%02d", pointMaxScoreInt) : "00";

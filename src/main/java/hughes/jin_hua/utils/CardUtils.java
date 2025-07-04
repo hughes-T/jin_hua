@@ -3,6 +3,9 @@ package hughes.jin_hua.utils;
 import com.google.common.collect.Lists;
 import hughes.jin_hua.pojo.Card;
 import hughes.jin_hua.pojo.HandCard;
+import hughes.jin_hua.pojo.Player;
+import hughes.jin_hua.pojo.PlayerRoundInfo;
+import org.springframework.security.core.parameters.P;
 
 import java.math.BigDecimal;
 import java.util.Collections;
@@ -57,35 +60,55 @@ public class CardUtils {
             }
         }
         // 洗牌
-        Collections.shuffle(cards);
+        for (int i = 0; i < 10; i++) {
+            Collections.shuffle(cards);
+        }
         return cards;
     }
 
 //    public static void main(String[] args) {
-//        List<Card> cards = Lists.newArrayList();
-//        cards.add(new Card()
-//                .setType(Card.TypeEum.TYPE_SPADE.getType())
-//                .setTypeLevel(Card.TypeEum.TYPE_SPADE.getTypePoint())
-//                .setPointLevel(11)
-//                .setPoint("Q")
-//                .setName(Card.TypeEum.TYPE_SPADE.getType() + "6")
-//        );
-//        cards.add(new Card()
-//                .setType(Card.TypeEum.TYPE_RED_HEART.getType())
-//                .setTypeLevel(Card.TypeEum.TYPE_RED_HEART.getTypePoint())
-//                .setPointLevel(12)
-//                .setPoint("K")
-//                .setName(Card.TypeEum.TYPE_RED_HEART.getType() + "K")
-//        );
-//        cards.add(new Card()
-//                .setType(Card.TypeEum.TYPE_SPADE.getType())
-//                .setTypeLevel(Card.TypeEum.TYPE_SPADE.getTypePoint())
-//                .setPointLevel(13)
-//                .setPoint("A")
-//                .setName(Card.TypeEum.TYPE_SPADE.getType() + "A")
-//        );
-//        HandCard handCard = new HandCard(cards);
-//        System.out.println(handCard.isStraight());
+//        List<Card> cards = CardUtils.initCards();
+//        List<PlayerRoundInfo> infos = Lists.newArrayList();
+//        PlayerRoundInfo info1 = new PlayerRoundInfo();
+//        info1.setPlayer(new Player().setName("顺"));
+//        PlayerRoundInfo info2 = new PlayerRoundInfo();
+//        info2.setPlayer(new Player().setName("力"));
+//        PlayerRoundInfo info3 = new PlayerRoundInfo();
+//        info3.setPlayer(new Player().setName("飞"));
+//        for (int i = 0; i < 9; i++) {
+//
+//        }
+//
+//
+//
 //    }
+
+
+    public static void main(String[] args) {
+        List<Card> cards = Lists.newArrayList();
+        cards.add(new Card()
+                .setType(Card.TypeEum.TYPE_SPADE.getType())
+                .setTypeLevel(Card.TypeEum.TYPE_SPADE.getTypePoint())
+                .setPointLevel(13)
+                .setPoint("A")
+                .setName(Card.TypeEum.TYPE_SPADE.getType() + "A")
+        );
+        cards.add(new Card()
+                .setType(Card.TypeEum.TYPE_RED_HEART.getType())
+                .setTypeLevel(Card.TypeEum.TYPE_RED_HEART.getTypePoint())
+                .setPointLevel(3)
+                .setPoint("3")
+                .setName(Card.TypeEum.TYPE_RED_HEART.getType() + "3")
+        );
+        cards.add(new Card()
+                .setType(Card.TypeEum.TYPE_SPADE.getType())
+                .setTypeLevel(Card.TypeEum.TYPE_SPADE.getTypePoint())
+                .setPointLevel(2)
+                .setPoint("2")
+                .setName(Card.TypeEum.TYPE_SPADE.getType() + "2")
+        );
+        HandCard handCard = new HandCard(cards);
+        System.out.println(handCard.isStraight());
+    }
 
 }
